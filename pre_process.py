@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -17,9 +17,9 @@ def create_bucket(s3, name, region):
                 Bucket=name,
                 CreateBucketConfiguration={"LocationConstraint": region}
             )
-        print(f"✅ Bucket {name} exists or created")
+        print(f" Bucket {name} exists or created")
     except Exception as e:
-        print(f"❌ Could not create/access bucket {name}: {e}")
+        print(f" Could not create/access bucket {name}: {e}")
 
 def upload(s3, local_path, bucket, key):
     s3.upload_file(local_path, bucket, key)

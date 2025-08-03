@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 import json
 import os
 from sagemaker import Session
@@ -10,7 +10,7 @@ from sagemaker.estimator import Estimator
 from sagemaker.inputs import TrainingInput
 from sagemaker.workflow.pipeline import Pipeline
 
-# Hardcode your SageMaker execution role ARN here
+
 ROLE_ARN = "arn:aws:iam::714556467435:role/NewAiStack-SageMakerRoleD4FCFA3F-sqVUgWwDd5Qq"
 
 script_path = "preprocessing_script.py"

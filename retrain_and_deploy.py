@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 import os
 import tarfile
 import boto3
@@ -54,7 +54,7 @@ def download_and_split():
     )
     train.to_csv("train.csv", index=False)
     test.to_csv("test.csv",  index=False)
-    print(f"✅ Split into {len(train)} train / {len(test)} test")
+    print(f" Split into {len(train)} train / {len(test)} test")
     s3.upload_file("train.csv", PROCESSED_BUCKET, "data/processed/train.csv")
     s3.upload_file("test.csv",  PROCESSED_BUCKET, "data/processed/test.csv")
     print("📤 Uploaded train/test CSVs")
@@ -139,7 +139,7 @@ transformers>=4.21.0
         t.add("code/inference.py", arcname="code/inference.py")
         t.add("code/requirements.txt", arcname="code/requirements.txt")
     
-    print("✅ Created model.tar.gz with custom inference code")
+    print(" Created model.tar.gz with custom inference code")
 
     s3.upload_file("model.tar.gz", PROCESSED_BUCKET, "model/model.tar.gz")
     print("📤 Uploaded model.tar.gz to S3")
@@ -149,44 +149,44 @@ def cleanup_existing_resources():
     
     try:
         sm.describe_endpoint(EndpointName=ENDPOINT_NAME)
-        print(f"🗑️  Deleting existing endpoint: {ENDPOINT_NAME}")
+        print(f"  Deleting existing endpoint: {ENDPOINT_NAME}")
         sm.delete_endpoint(EndpointName=ENDPOINT_NAME)
         
-        print("⏳ Waiting for endpoint deletion...")
+        print(" Waiting for endpoint deletion...")
         max_wait = 300  # 5 minutes
         wait_time = 0
         
         while wait_time < max_wait:
             try:
                 sm.describe_endpoint(EndpointName=ENDPOINT_NAME)
-                print(f"⏳ Still deleting... ({wait_time}s)")
+                print(f" Still deleting... ({wait_time}s)")
                 time.sleep(10)
                 wait_time += 10
             except sm.exceptions.ClientError as e:
                 if "does not exist" in str(e):
-                    print("✅ Endpoint deleted successfully")
+                    print(" Endpoint deleted successfully")
                     break
                 else:
                     raise
         else:
-            print("⚠️  Timeout waiting for endpoint deletion")
+            print("  Timeout waiting for endpoint deletion")
             
     except sm.exceptions.ClientError as e:
         if "does not exist" in str(e):
-            print(f"ℹ️  Endpoint {ENDPOINT_NAME} doesn't exist, skipping deletion")
+            print(f"  Endpoint {ENDPOINT_NAME} doesn't exist, skipping deletion")
         else:
-            print(f"❌ Error checking endpoint: {e}")
+            print(f" Error checking endpoint: {e}")
     
     try:
         sm.describe_endpoint_config(EndpointConfigName=ENDPOINT_NAME)
-        print(f"🗑️  Deleting existing endpoint config: {ENDPOINT_NAME}")
+        print(f"  Deleting existing endpoint config: {ENDPOINT_NAME}")
         sm.delete_endpoint_config(EndpointConfigName=ENDPOINT_NAME)
-        print("✅ Endpoint config deleted")
+        print(" Endpoint config deleted")
     except sm.exceptions.ClientError as e:
         if "does not exist" in str(e):
-            print(f"ℹ️  Endpoint config {ENDPOINT_NAME} doesn't exist, skipping deletion")
+            print(f"  Endpoint config {ENDPOINT_NAME} doesn't exist, skipping deletion")
         else:
-            print(f"❌ Error checking endpoint config: {e}")
+            print(f" Error checking endpoint config: {e}")
 
 def register_and_deploy():
     s3_model = f"s3://{PROCESSED_BUCKET}/model/model.tar.gz"
@@ -226,7 +226,7 @@ def register_and_deploy():
         ModelApprovalStatus="Approved"
     )
     pkg_arn = resp["ModelPackageArn"]
-    print("✅ Registered model package:", pkg_arn)
+    print(" Registered model package:", pkg_arn)
 
     endpoint_config_name = f"{ENDPOINT_NAME}-{timestamp}"
     
@@ -242,16 +242,16 @@ def register_and_deploy():
         endpoint_name=ENDPOINT_NAME,
         endpoint_config_name=endpoint_config_name
     )
-    print("✅ Created new endpoint:", ENDPOINT_NAME)
+    print(" Created new endpoint:", ENDPOINT_NAME)
     return predictor
 
 if __name__ == "__main__":
     if not local_model_exists():
-        print("ℹ️ No local model.tar.gz found. Training now…")
+        print(" No local model.tar.gz found. Training now…")
         download_and_split()
         train_and_package()
     else:
-        print("ℹ️ Found local model.tar.gz. Skipping training.")
+        print(" Found local model.tar.gz. Skipping training.")
     
     predictor = register_and_deploy()
-    print(f"🎉 Deployment complete! Endpoint: {ENDPOINT_NAME}")
+    print(f" Deployment complete! Endpoint: {ENDPOINT_NAME}")

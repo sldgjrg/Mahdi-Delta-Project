@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 """
 Simple script to test the SageMaker endpoint
 """
@@ -54,7 +54,7 @@ def test_endpoint():
             try:
                 result = json.loads(raw_response)
             except json.JSONDecodeError as e:
-                print(f"❌ JSON decode error: {e}")
+                print(f" JSON decode error: {e}")
                 print(f"Raw response was: {raw_response}")
                 continue
             
@@ -67,7 +67,7 @@ def test_endpoint():
                 if result:
                     best_result = max(result, key=lambda x: x.get('score', 0) if isinstance(x, dict) else 0)
                     if isinstance(best_result, dict):
-                        print(f"✅ Result: {best_result.get('label', 'N/A')} "
+                        print(f" Result: {best_result.get('label', 'N/A')} "
                               f"(confidence: {best_result.get('score', 0):.3f})")
                         
                         # Show all scores
@@ -75,13 +75,13 @@ def test_endpoint():
                                              for r in result if isinstance(r, dict)])
                         print(f"   All scores: {score_str}")
                     else:
-                        print(f"✅ Result: {best_result}")
+                        print(f" Result: {best_result}")
                 else:
-                    print("❌ Empty result")
+                    print(" Empty result")
             
             elif isinstance(result, dict):
                 # Custom format
-                print(f"✅ Result: {result.get('predicted_label', 'N/A')} "
+                print(f" Result: {result.get('predicted_label', 'N/A')} "
                       f"(confidence: {result.get('confidence', 0):.3f})")
                 
                 if 'all_scores' in result:
@@ -90,13 +90,13 @@ def test_endpoint():
                     print(f"   Scores: {score_str}")
             
             elif isinstance(result, str):
-                print(f"✅ String result: {result}")
+                print(f" String result: {result}")
             
             else:
-                print(f"❌ Unexpected result format: {type(result)} - {result}")
+                print(f" Unexpected result format: {type(result)} - {result}")
             
         except Exception as e:
-            print(f"❌ Error: {e}")
+            print(f" Error: {e}")
             import traceback
             traceback.print_exc()
         
@@ -112,24 +112,24 @@ def check_endpoint_status():
         print(f"Endpoint Status: {status}")
         
         if status == 'InService':
-            print("✅ Endpoint is ready for inference")
+            print("Endpoint is ready for inference")
             return True
         elif status in ['Creating', 'Updating']:
-            print("⏳ Endpoint is still being created/updated")
+            print("Endpoint is still being created/updated")
             return False
         else:
-            print(f"⚠️  Endpoint status: {status}")
+            print(f"Endpoint status: {status}")
             return False
             
     except Exception as e:
-        print(f"❌ Error checking endpoint: {e}")
+        print(f"Error checking endpoint: {e}")
         return False
 
 if __name__ == "__main__":
-    print("🔍 Checking endpoint status...")
+    print("Checking endpoint status...")
     
     if check_endpoint_status():
-        print("\n🧪 Running tests...")
+        print("Running tests...")
         test_endpoint()
     else:
-        print("❌ Endpoint not ready. Please wait and try again.")
+        print("Endpoint not ready. Please wait and try again.")
