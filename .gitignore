@@ -27,3 +27,6 @@ instructions.txt
 .ipynb_checkpoints/
 results/
 final_model/
+
+*.gz
+model.tar.gz
