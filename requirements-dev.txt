@@ -1,0 +1,17 @@
+pytest==6.2.5
+
+
+# python inference.py --use-sagemaker
+# python retrain_and_deploy.py   
+
+# if you want to regenerate the template run 
+#python generate_pipeline_definition.py
+#cdk synth --no-staging > template.yaml
+#cdk deploy
+
+
+# aws sagemaker create-pipeline \                                         
+#   --pipeline-name ValidatePipeline \
+#   --pipeline-definition file://pipeline_assets/pipeline_definition.json \
+#   --role-arn arn:aws:iam::123456789012:role/SageMakerRole \
+#   --region us-east-1

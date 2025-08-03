@@ -1,0 +1,13 @@
+aws-cdk-lib==2.206.0
+constructs>=10.0.0,<11.0.0
+boto3
+pandas
+scikit-learn
+datasets
+transformers
+kagglehub
+python-dotenv
+torch
+sentencepiece
+accelerate>=0.26.0
+sagemaker

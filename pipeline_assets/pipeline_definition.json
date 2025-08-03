@@ -1,0 +1,225 @@
+{
+  "Version": "2020-12-01",
+  "Metadata": {
+    "PipelineName": "SentimentAnalysisPipeline"
+  },
+  "Parameters": [
+    {
+      "Name": "RawDataUri",
+      "Type": "String"
+    },
+    {
+      "Name": "ProcTrainDataUri",
+      "Type": "String"
+    },
+    {
+      "Name": "ProcValDataUri",
+      "Type": "String"
+    },
+    {
+      "Name": "InstanceType",
+      "Type": "String"
+    },
+    {
+      "Name": "InstanceCount",
+      "Type": "Integer"
+    },
+    {
+      "Name": "ModelPackageGroup",
+      "Type": "String"
+    }
+  ],
+  "Steps": [
+    {
+      "Name": "Preprocess",
+      "Type": "Processing",
+      "Arguments": {
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceType": {
+              "Get": "Parameters.InstanceType"
+            },
+            "InstanceCount": {
+              "Get": "Parameters.InstanceCount"
+            },
+            "VolumeSizeInGB": 30
+          }
+        },
+        "AppSpecification": {
+          "ImageUri": "683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:0.23-1-cpu-py3",
+          "ContainerEntrypoint": [
+            "python3",
+            "/opt/ml/processing/input/code/preprocessing_script.py"
+          ]
+        },
+        "RoleArn": "arn:aws:iam::714556467435:role/NewAiStack-SageMakerRoleD4FCFA3F-sqVUgWwDd5Qq",
+        "ProcessingInputs": [
+          {
+            "InputName": "input-1",
+            "AppManaged": false,
+            "S3Input": {
+              "S3Uri": {
+                "Get": "Parameters.RawDataUri"
+              },
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          },
+          {
+            "InputName": "code",
+            "AppManaged": false,
+            "S3Input": {
+              "S3Uri": "s3://sagemaker-us-east-1-714556467435/sagemaker-scikit-learn-2025-07-31-01-36-40-752/input/code/preprocessing_script.py",
+              "LocalPath": "/opt/ml/processing/input/code",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "train_data",
+              "AppManaged": false,
+              "S3Output": {
+                "S3Uri": {
+                  "Std:Join": {
+                    "On": "/",
+                    "Values": [
+                      "s3:/",
+                      "sagemaker-us-east-1-714556467435",
+                      "SentimentAnalysisPipeline",
+                      {
+                        "Get": "Execution.PipelineExecutionId"
+                      },
+                      "Preprocess",
+                      "output",
+                      "train_data"
+                    ]
+                  }
+                },
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              }
+            }
+          ]
+        },
+        "StoppingCondition": {
+          "MaxRuntimeInSeconds": 3600
+        }
+      }
+    },
+    {
+      "Name": "Train",
+      "Type": "Training",
+      "Arguments": {
+        "AlgorithmSpecification": {
+          "TrainingInputMode": "File",
+          "TrainingImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-training:4.17.0-py38-cpu-py310-ubuntu20.04"
+        },
+        "OutputDataConfig": {
+          "S3OutputPath": {
+            "Get": "Parameters.ProcTrainDataUri"
+          }
+        },
+        "StoppingCondition": {
+          "MaxRuntimeInSeconds": 86400
+        },
+        "ResourceConfig": {
+          "VolumeSizeInGB": 30,
+          "InstanceCount": {
+            "Get": "Parameters.InstanceCount"
+          },
+          "InstanceType": {
+            "Get": "Parameters.InstanceType"
+          }
+        },
+        "RoleArn": "arn:aws:iam::714556467435:role/NewAiStack-SageMakerRoleD4FCFA3F-sqVUgWwDd5Qq",
+        "InputDataConfig": [
+          {
+            "DataSource": {
+              "S3DataSource": {
+                "S3DataType": "S3Prefix",
+                "S3Uri": {
+                  "Get": "Steps.Preprocess.ProcessingOutputConfig.Outputs['train_data'].S3Output.S3Uri"
+                },
+                "S3DataDistributionType": "FullyReplicated"
+              }
+            },
+            "ContentType": "application/json",
+            "ChannelName": "train"
+          },
+          {
+            "DataSource": {
+              "S3DataSource": {
+                "S3DataType": "S3Prefix",
+                "S3Uri": {
+                  "Get": "Parameters.ProcValDataUri"
+                },
+                "S3DataDistributionType": "FullyReplicated"
+              }
+            },
+            "ContentType": "application/json",
+            "ChannelName": "validation"
+          }
+        ],
+        "HyperParameters": {
+          "model_name": "yangheng/deberta-v3-base-absa-v1.1",
+          "epochs": "3",
+          "train_batch_size": "16",
+          "validation_split": "0.1"
+        },
+        "DebugHookConfig": {
+          "S3OutputPath": {
+            "Get": "Parameters.ProcTrainDataUri"
+          },
+          "CollectionConfigurations": []
+        },
+        "ProfilerConfig": {
+          "S3OutputPath": {
+            "Get": "Parameters.ProcTrainDataUri"
+          },
+          "DisableProfiler": false
+        }
+      }
+    },
+    {
+      "Name": "Register-RegisterModel",
+      "Type": "RegisterModel",
+      "Arguments": {
+        "ModelPackageGroupName": {
+          "Get": "Parameters.ModelPackageGroup"
+        },
+        "InferenceSpecification": {
+          "Containers": [
+            {
+              "Image": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-training:4.17.0-py38-cpu-py310-ubuntu20.04",
+              "ModelDataUrl": {
+                "Get": "Steps.Train.ModelArtifacts.S3ModelArtifacts"
+              }
+            }
+          ],
+          "SupportedContentTypes": [
+            "application/json"
+          ],
+          "SupportedResponseMIMETypes": [
+            "application/json"
+          ],
+          "SupportedRealtimeInferenceInstanceTypes": [
+            "ml.t2.medium"
+          ],
+          "SupportedTransformInstanceTypes": [
+            "ml.m5.large"
+          ]
+        },
+        "ModelApprovalStatus": "PendingManualApproval",
+        "SkipModelValidation": "None"
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+python generate_pipeline_definition.py
+cdk synth
+cdk deploy
+(Creates your S3 buckets, IAM roles, initial SageMaker Pipeline / Model Group, etc.)
+Load raw data
+python upload_to_s3.py
+(Uploads Tweets.csv into twitter-airline-sentiment-raw.)
+Train & package
+python fine_tune_sentiment.py
+(Downloads raw, splits, fine‑tunes DeBERTa, uploads train/test splits + model.tar.gz to S3.)
+Register & deploy endpoint
+python deploy_sagemaker.py
+(Registers a new model package in Model Registry and spins up—or reuses—the real‑time endpoint.)
+Run inference
+Locally
+python inference.py
+(Loads ./final_model and prompts you in your terminal.)
+Against SageMaker
+python inference.py --use-sagemaker
+(Sends each request to your deployed SentimentEndpoint.)
