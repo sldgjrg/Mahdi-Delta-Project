@@ -60,8 +60,6 @@ def test_endpoint():
             
             print(f"Parsed result: {result}")
             print(f"Result type: {type(result)}")
-            
-            # Handle different response formats
             if isinstance(result, list):
                 # Default Hugging Face format: [{"label": "NEGATIVE", "score": 0.99}]
                 if result:
@@ -69,8 +67,6 @@ def test_endpoint():
                     if isinstance(best_result, dict):
                         print(f" Result: {best_result.get('label', 'N/A')} "
                               f"(confidence: {best_result.get('score', 0):.3f})")
-                        
-                        # Show all scores
                         score_str = ", ".join([f"{r.get('label', 'N/A')}:{r.get('score', 0):.3f}" 
                                              for r in result if isinstance(r, dict)])
                         print(f"   All scores: {score_str}")

@@ -39,7 +39,7 @@ sm = boto3.client("sagemaker", region_name=AWS_REGION)
 sess = Session(boto_session=boto3.Session(region_name=AWS_REGION))
 
 
-def local_model_exists() -> bool:
+def local_model_exists():
     return os.path.exists("model.tar.gz")
 
 def download_and_split():
@@ -114,15 +114,12 @@ def train_and_package():
     )
 
     trainer.train()
-    print("▶️ Eval:", trainer.evaluate())
+    print("Eval:", trainer.evaluate())
 
     trainer.save_model("./final_model")
     tokenizer.save_pretrained("./final_model", use_fast=False)
- 
     
     os.makedirs("code", exist_ok=True)
-    
-    # Copy inference script to code directory
     import shutil
     shutil.copy("inference.py", "code/inference.py")
     requirements = """torch>=1.9.0
@@ -142,7 +139,7 @@ transformers>=4.21.0
     print(" Created model.tar.gz with custom inference code")
 
     s3.upload_file("model.tar.gz", PROCESSED_BUCKET, "model/model.tar.gz")
-    print("📤 Uploaded model.tar.gz to S3")
+    print("Uploaded model.tar.gz to S3")
 
 def cleanup_existing_resources():
     """Clean up existing endpoint and endpoint config if they exist"""

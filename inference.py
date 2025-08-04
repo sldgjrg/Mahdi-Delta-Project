@@ -94,18 +94,18 @@ def interactive(tok=None, mdl=None, use_sm=False):
             out = invoke_sagemaker(text, aspect)
             if out:
                 print("→ SageMaker result:")
-                print(f"  Label:      {out.get('predicted_label', 'N/A')}")
-                print(f"  Confidence: {out.get('confidence', 0):.4f}")
+                print(f"Label: {out.get('predicted_label', 'N/A')}")
+                print(f"onfidence: {out.get('confidence', 0):.4f}")
                 if "all_scores" in out:
                     print("  All scores:")
                     for s in out["all_scores"]:
-                        print(f"    {s['label']}: {s['score']:.3f}")
+                        print(f"{s['label']}: {s['score']:.3f}")
             else:
                 print("→ SageMaker inference failed")
         else:
             lbl, sc, scores = predict_local(tok, mdl, text, aspect)
             print(f"→ {lbl} ({sc:.4f})")
-            print("  Scores:", ", ".join(f"{l}:{s:.3f}" for l, s in scores.items()))
+            print("Scores:", ", ".join(f"{l}:{s:.3f}" for l, s in scores.items()))
 
 def main():
     p = argparse.ArgumentParser()
