@@ -25,7 +25,7 @@ Resources:
       Description: /opt/awscli/aws
     Metadata:
       aws:cdk:path: NewAiStack/PipelineDefDeploy/AwsCliLayer/Resource
-      aws:asset:path: /var/folders/51/hxhy0sc159jfz5f94nzyj6_w0000gn/T/jsii-kernel-mW2CoD/node_modules/@aws-cdk/asset-awscli-v1/lib/layer.zip
+      aws:asset:path: /var/folders/51/hxhy0sc159jfz5f94nzyj6_w0000gn/T/jsii-kernel-5rmRha/node_modules/@aws-cdk/asset-awscli-v1/lib/layer.zip
       aws:asset:is-bundled: false
       aws:asset:property: Content
   PipelineDefDeployCustomResource11B6F939:
@@ -38,7 +38,7 @@ Resources:
       SourceBucketNames:
         - Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
       SourceObjectKeys:
-        - 1dd7564a4fe2eed6a67223e1a2ab1db3c5c7989cfe3df7cac17349d34af7b8c2.zip
+        - 123901a017ee7589140f3bea3f2de62fc3185dc2e18f4e0d347b36cb6b977aaa.zip
       DestinationBucketName:
         Ref: ProcessedDataBucket4E25D3B7
       DestinationBucketKeyPrefix: definitions
@@ -142,7 +142,7 @@ Resources:
       - CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265
     Metadata:
       aws:cdk:path: NewAiStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource
-      aws:asset:path: /var/folders/51/hxhy0sc159jfz5f94nzyj6_w0000gn/T/jsii-kernel-mW2CoD/node_modules/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-handler
+      aws:asset:path: /var/folders/51/hxhy0sc159jfz5f94nzyj6_w0000gn/T/jsii-kernel-5rmRha/node_modules/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-handler
       aws:asset:is-bundled: false
       aws:asset:property: Code
   CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CLogGroup817B64E9:

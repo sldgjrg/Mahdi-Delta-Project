@@ -72,7 +72,7 @@
             "InputName": "code",
             "AppManaged": false,
             "S3Input": {
-              "S3Uri": "s3://sagemaker-us-east-1-714556467435/sagemaker-scikit-learn-2025-07-31-01-36-40-752/input/code/preprocessing_script.py",
+              "S3Uri": "s3://sagemaker-us-east-1-714556467435/sagemaker-scikit-learn-2025-08-04-02-55-45-640/input/code/preprocessing_script.py",
               "LocalPath": "/opt/ml/processing/input/code",
               "S3DataType": "S3Prefix",
               "S3InputMode": "File",
